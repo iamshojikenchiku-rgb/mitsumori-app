@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>現場メモ → 見積たたき台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3347;
+    --accent: #e8a045;
+    --accent2: #4a9eff;
+    --danger: #e85555;
+    --success: #4caf7d;
+    --text: #e8eaf0;
+    --text2: #8890a8;
+    --text3: #555e7a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'Noto Sans JP',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:40px; }
+
+  .header { background:var(--surface); border-bottom:1px solid var(--border); padding:16px 20px 14px; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:center; justify-content:space-between; }
+  .header-title { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; }
+  .step-indicator { display:flex; gap:6px; }
+  .step-dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:background 0.3s; }
+  .step-dot.active { background:var(--accent); }
+  .step-dot.done { background:var(--success); }
+  .step-label { font-size:18px; font-weight:700; margin-top:6px; line-height:1.2; }
+
+  .step-page { display:none; padding:20px; }
+  .step-page.active { display:block; animation:fadeUp 0.3s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:14px; }
+  .section-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:12px; }
+
+  label { display:block; font-size:12px; color:var(--text2); margin-bottom:5px; margin-top:14px; }
+  label:first-of-type { margin-top:0; }
+  input[type="text"], input[type="number"], input[type="date"], textarea, select {
+    width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:15px; padding:12px 14px;
+    outline:none; transition:border-color 0.2s; -webkit-appearance:none;
+  }
+  input:focus, textarea:focus, select:focus { border-color:var(--accent); }
+  textarea { resize:none; line-height:1.6; }
+  select option { background:var(--surface2); }
+
+  .check-group { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .check-item { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; cursor:pointer; transition:border-color 0.2s,background 0.2s; font-size:13px; }
+  .check-item.checked { border-color:var(--accent); background:rgba(232,160,69,0.08); color:var(--accent); }
+  .check-item input { display:none; }
+  .check-icon { width:16px; height:16px; border:1.5px solid var(--border); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; transition:all 0.2s; }
+  .check-item.checked .check-icon { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  .cost-headers { display:grid; grid-template-columns:1fr 70px 90px 32px; gap:6px; margin-bottom:2px; }
+  .col-header { font-family:'DM Mono',monospace; font-size:9px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; }
+  .cost-row { display:grid; grid-template-columns:1fr 70px 90px 32px; gap:6px; align-items:center; margin-bottom:8px; }
+  .cost-row input { font-size:13px; padding:10px; }
+  .del-btn { width:32px; height:32px; background:rgba(232,85,85,0.12); border:1px solid rgba(232,85,85,0.3); border-radius:6px; color:var(--danger); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .add-btn { width:100%; background:transparent; border:1.5px dashed var(--border); border-radius:8px; color:var(--text3); font-size:13px; padding:10px; cursor:pointer; margin-top:6px; transition:border-color 0.2s,color 0.2s; }
+  .add-btn:hover { border-color:var(--accent2); color:var(--accent2); }
+
+  .total-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px; margin-top:8px; }
+  .total-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:13px; color:var(--text2); border-bottom:1px solid var(--border); }
+  .total-row:last-child { border-bottom:none; }
+  .total-row.main { font-size:16px; font-weight:700; color:var(--accent); padding-top:10px; }
+  .total-row span:last-child { font-family:'DM Mono',monospace; font-size:14px; }
+  .total-row.main span:last-child { font-size:18px; }
+
+  .profit-meter { margin-top:12px; }
+  .meter-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text2); margin-bottom:5px; }
+  .meter-bar { height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .meter-fill { height:100%; border-radius:4px; transition:width 0.5s,background 0.5s; }
+
+  .nav-row { display:flex; gap:10px; margin-top:20px; }
+  .btn { flex:1; padding:15px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; border:none; font-family:'Noto Sans JP',sans-serif; transition:opacity 0.2s,transform 0.1s; }
+  .btn:active { transform:scale(0.97); }
+  .btn-primary { background:var(--accent); color:#0f1117; }
+  .btn-secondary { background:var(--surface2); border:1px solid var(--border); color:var(--text2); }
+  .btn-success { background:var(--success); color:#fff; }
+
+  .risk-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .risk-tag { font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid var(--border); color:var(--text2); background:var(--surface2); cursor:pointer; transition:all 0.2s; }
+  .risk-tag.selected { background:rgba(232,85,85,0.12); border-color:var(--danger); color:var(--danger); }
+
+  .divider { height:1px; background:var(--border); margin:16px 0; }
+  .alert { background:rgba(232,160,69,0.08); border:1px solid rgba(232,160,69,0.3); border-radius:8px; padding:12px 14px; font-size:12px; color:var(--accent); line-height:1.7; margin-bottom:14px; }
+
+  .copy-section { margin-bottom:16px; }
+  .copy-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .copy-title { font-size:12px; font-weight:700; color:var(--text2); letter-spacing:0.05em; }
+  .copy-btn { background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--accent2); font-size:11px; padding:5px 12px; cursor:pointer; font-family:'DM Mono',monospace; }
+  .copy-btn.copied { background:rgba(76,175,125,0.15); border-color:var(--success); color:var(--success); }
+  .prompt-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px; font-size:12px; line-height:1.85; color:var(--text); white-space:pre-wrap; word-break:break-all; max-height:38vh; overflow-y:auto; font-family:'DM Mono',monospace; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="header-title">現場 → 見積たたき台</div>
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot0"></div>
+      <div class="step-dot" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+  </div>
+  <div class="step-label" id="stepLabel">STEP 1　現場情報</div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step-page active" id="step0">
+  <div class="section">
+    <div class="section-label">基本情報</div>
+    <label>施主名</label>
+    <input type="text" id="clientName" placeholder="例）山田 太郎 様">
+    <label>現場住所（略記可）</label>
+    <input type="text" id="address" placeholder="例）○○市△△町 2丁目">
+    <label>調査日</label>
+    <input type="date" id="surveyDate">
+  </div>
+  <div class="section">
+    <div class="section-label">工事種別（複数可）</div>
+    <div class="check-group" id="workTypeGroup">
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="新築工事"><div class="check-icon">✓</div>新築工事</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="増築工事"><div class="check-icon">✓</div>増築工事</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="リフォーム"><div class="check-icon">✓</div>リフォーム</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="内装工事"><div class="check-icon">✓</div>内装工事</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="外装工事"><div class="check-icon">✓</div>外装工事</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="屋根工事"><div class="check-icon">✓</div>屋根工事</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="水廻り工事"><div class="check-icon">✓</div>水廻り工事</label>
+      <label class="check-item" onclick="toggleCheck(this)"><input type="checkbox" value="外構工事"><div class="check-icon">✓</div>外構工事</label>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-label">現場メモ</div>
+    <label>現場状況・施主の要望</label>
+    <textarea id="siteNote" rows="5" placeholder="・床の傷みが激しい（LDK約20畳）&#10;・窓サッシ交換希望&#10;・築30年 木造2階建て&#10;・駐車スペースあり&#10;・希望完工：3ヶ月以内"></textarea>
+    <label>寸法メモ</label>
+    <textarea id="dimensionNote" rows="3" placeholder="例）LDK 7.2×5.4m、廊下 1.2×8m"></textarea>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-primary" onclick="goStep(1)">次へ　原価入力 →</button>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-page" id="step1">
+  <div class="alert">💡 現場で拾った数量をそのまま入力。単価はChatGPT・Perplexityで確認後に修正可。</div>
+  <div class="section">
+    <div class="section-label">材料費</div>
+    <div class="cost-headers">
+      <div class="col-header">品名</div><div class="col-header">数量</div><div class="col-header">単価(円)</div><div class="col-header"></div>
+    </div>
+    <div id="materialRows"></div>
+    <button class="add-btn" onclick="addRow('material')">＋ 材料を追加</button>
+  </div>
+  <div class="section">
+    <div class="section-label">労務費（工賃）</div>
+    <div class="cost-headers">
+      <div class="col-header">工種</div><div class="col-header">人工</div><div class="col-header">単価(円)</div><div class="col-header"></div>
+    </div>
+    <div id="laborRows"></div>
+    <button class="add-btn" onclick="addRow('labor')">＋ 工種を追加</button>
+  </div>
+  <div class="section">
+    <div class="section-label">外注費</div>
+    <div class="cost-headers">
+      <div class="col-header">業者・工種</div><div class="col-header">数量</div><div class="col-header">金額(円)</div><div class="col-header"></div>
+    </div>
+    <div id="subRows"></div>
+    <button class="add-btn" onclick="addRow('sub')">＋ 外注を追加</button>
+  </div>
+  <div class="section">
+    <div class="section-label">経費・利益設定</div>
+    <label>現場経費率（%）</label>
+    <input type="number" id="expenseRate" value="10" min="0" max="50">
+    <label>目標粗利率（%）</label>
+    <input type="number" id="profitRate" value="25" min="0" max="80">
+  </div>
+  <div class="section">
+    <div class="section-label">原価合計（自動計算）</div>
+    <div class="total-box">
+      <div class="total-row"><span>材料費</span><span id="matTotal">¥0</span></div>
+      <div class="total-row"><span>労務費</span><span id="labTotal">¥0</span></div>
+      <div class="total-row"><span>外注費</span><span id="subTotal">¥0</span></div>
+      <div class="total-row"><span>現場経費</span><span id="expTotal">¥0</span></div>
+      <div class="total-row"><span>原価合計</span><span id="costTotal">¥0</span></div>
+      <div class="total-row main"><span>見積金額（税抜）</span><span id="quoteTotal">¥0</span></div>
+      <div class="total-row main" style="color:var(--success)"><span>粗利額</span><span id="profitTotal">¥0</span></div>
+    </div>
+    <div class="profit-meter">
+      <div class="meter-label"><span>粗利率</span><span id="profitPct">0%</span></div>
+      <div class="meter-bar"><div class="meter-fill" id="meterFill" style="width:0%;background:var(--danger)"></div></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="goStep(0)">← 戻る</button>
+    <button class="btn btn-primary" onclick="goStep(2)">次へ　リスク確認 →</button>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-page" id="step2">
+  <div class="section">
+    <div class="section-label">現場リスク（該当するものを選択）</div>
+    <div class="risk-tags" id="riskTags">
+      <span class="risk-tag" onclick="toggleRisk(this)">足場が必要</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">アスベスト懸念</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">雨漏り・水損あり</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">シロアリ懸念</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">腐朽・腐食あり</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">隣地近接</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">狭小・搬入困難</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">解体が必要</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">確認申請が必要</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">追加工事の可能性大</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">施主支給あり</span>
+      <span class="risk-tag" onclick="toggleRisk(this)">工期が短い</span>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-label">その他リスク・気になる点</div>
+    <textarea id="riskNote" rows="4" placeholder="例）床下に断熱材なし、開口部の補強が必要な可能性あり"></textarea>
+  </div>
+  <div class="section">
+    <div class="section-label">見積条件</div>
+    <label>工期（目安）</label>
+    <input type="text" id="duration" placeholder="例）約3週間、2ヶ月程度">
+    <label>有効期限</label>
+    <input type="text" id="validity" placeholder="例）1ヶ月">
+    <label>支払条件</label>
+    <select id="payment">
+      <option value="着手金30%・完工時70%">着手金30%・完工時70%</option>
+      <option value="着手金50%・完工時50%">着手金50%・完工時50%</option>
+      <option value="完工後一括払い">完工後一括払い</option>
+      <option value="3回分割払い">3回分割払い</option>
+    </select>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="goStep(1)">← 戻る</button>
+    <button class="btn btn-primary" onclick="goStep(3); generateOutput()">出力を生成 →</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-page" id="step3">
+  <div class="copy-section">
+    <div class="copy-header">
+      <div class="copy-title">📋 Notion貼り付け用（案件記録）</div>
+      <button class="copy-btn" id="copyNotion" onclick="copyText('notionOutput','copyNotion')">COPY</button>
+    </div>
+    <div class="prompt-box" id="notionOutput"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="copy-section">
+    <div class="copy-header">
+      <div class="copy-title">🤖 ChatGPT用（積算チェック）</div>
+      <button class="copy-btn" id="copyChatGPT" onclick="copyText('chatgptPrompt','copyChatGPT')">COPY</button>
+    </div>
+    <div class="prompt-box" id="chatgptPrompt"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="copy-section">
+    <div class="copy-header">
+      <div class="copy-title">🔍 Perplexity用（相場・法規確認）</div>
+      <button class="copy-btn" id="copyPerplexity" onclick="copyText('perplexityPrompt','copyPerplexity')">COPY</button>
+    </div>
+    <div class="prompt-box" id="perplexityPrompt"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="copy-section">
+    <div class="copy-header">
+      <div class="copy-title">✍️ Claude用（見積書たたき台作成）</div>
+      <button class="copy-btn" id="copyClaude" onclick="copyText('claudePrompt','copyClaude')">COPY</button>
+    </div>
+    <div class="prompt-box" id="claudePrompt"></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-secondary" onclick="goStep(2)">← 修正</button>
+    <button class="btn btn-success" onclick="resetAll()">新規案件 ＋</button>
+  </div>
+</div>
+
+<script>
+let currentStep = 0;
+const stepLabels = ['STEP 1　現場情報','STEP 2　原価入力','STEP 3　リスク確認','STEP 4　出力'];
+
+window.onload = () => {
+  document.getElementById('surveyDate').value = new Date().toISOString().split('T')[0];
+  addRow('material'); addRow('labor');
+};
+
+function goStep(n) {
+  document.getElementById('step'+currentStep).classList.remove('active');
+  document.getElementById('dot'+currentStep).classList.remove('active');
+  document.getElementById('dot'+currentStep).classList.add('done');
+  currentStep = n;
+  document.getElementById('step'+currentStep).classList.add('active');
+  document.getElementById('dot'+currentStep).classList.remove('done');
+  document.getElementById('dot'+currentStep).classList.add('active');
+  document.getElementById('stepLabel').textContent = stepLabels[n];
+  window.scrollTo(0,0);
+  if(n===1) calcTotals();
+}
+
+function toggleCheck(el){ el.classList.toggle('checked'); }
+function toggleRisk(el){ el.classList.toggle('selected'); }
+
+function getCheckedValues(gid){
+  return Array.from(document.querySelectorAll('#'+gid+' .check-item.checked input')).map(i=>i.value);
+}
+function getSelectedRisks(){
+  return Array.from(document.querySelectorAll('#riskTags .risk-tag.selected')).map(t=>t.textContent);
+}
+
+function addRow(type){
+  const c = document.getElementById(type+'Rows');
+  const d = document.createElement('div');
+  d.className='cost-row';
+  const p1 = type==='material'?'品名':type==='labor'?'工種':'業者名';
+  const p2 = type==='labor'?'人工':'数量';
+  d.innerHTML=`<input type="text" placeholder="${p1}" oninput="calcTotals()"><input type="number" placeholder="${p2}" min="0" step="0.1" oninput="calcTotals()"><input type="number" placeholder="単価" min="0" oninput="calcTotals()"><div class="del-btn" onclick="this.parentNode.remove();calcTotals()">×</div>`;
+  c.appendChild(d);
+}
+
+function getRowData(type){
+  const rows=document.querySelectorAll('#'+type+'Rows .cost-row');
+  let items=[],total=0;
+  rows.forEach(r=>{
+    const ins=r.querySelectorAll('input');
+    const name=ins[0].value||'（未記入）';
+    const qty=parseFloat(ins[1].value)||0;
+    const unit=parseFloat(ins[2].value)||0;
+    const amount=qty*unit; total+=amount;
+    if(ins[0].value||qty||unit) items.push({name,qty,unit,amount});
+  });
+  return{items,total};
+}
+
+function fmt(n){ return '¥'+Math.round(n).toLocaleString('ja-JP'); }
+
+function calcTotals(){
+  const mat=getRowData('material'), lab=getRowData('labor'), sub=getRowData('sub');
+  const er=parseFloat(document.getElementById('expenseRate').value)/100||0.1;
+  const pr=parseFloat(document.getElementById('profitRate').value)/100||0.25;
+  const base=mat.total+lab.total+sub.total;
+  const exp=base*er, cost=base+exp;
+  const quote=pr<1?cost/(1-pr):cost;
+  const profit=quote-cost;
+  const pct=quote>0?profit/quote*100:0;
+  document.getElementById('matTotal').textContent=fmt(mat.total);
+  document.getElementById('labTotal').textContent=fmt(lab.total);
+  document.getElementById('subTotal').textContent=fmt(sub.total);
+  document.getElementById('expTotal').textContent=fmt(exp);
+  document.getElementById('costTotal').textContent=fmt(cost);
+  document.getElementById('quoteTotal').textContent=fmt(quote);
+  document.getElementById('profitTotal').textContent=fmt(profit);
+  document.getElementById('profitPct').textContent=pct.toFixed(1)+'%';
+  const f=document.getElementById('meterFill');
+  f.style.width=Math.min(pct,100)+'%';
+  f.style.background=pct<15?'var(--danger)':pct<20?'var(--accent)':'var(--success)';
+}
+
+function generateOutput(){
+  calcTotals();
+  const client=document.getElementById('clientName').value||'（未記入）';
+  const address=document.getElementById('address').value||'（未記入）';
+  const date=document.getElementById('surveyDate').value||'本日';
+  const workTypes=getCheckedValues('workTypeGroup');
+  const siteNote=document.getElementById('siteNote').value||'（なし）';
+  const dimNote=document.getElementById('dimensionNote').value||'（なし）';
+  const risks=getSelectedRisks();
+  const riskNote=document.getElementById('riskNote').value||'（なし）';
+  const duration=document.getElementById('duration').value||'（未定）';
+  const validity=document.getElementById('validity').value||'1ヶ月';
+  const payment=document.getElementById('payment').value;
+  const mat=getRowData('material'),lab=getRowData('labor'),sub=getRowData('sub');
+  const er=parseFloat(document.getElementById('expenseRate').value)||10;
+  const pr=parseFloat(document.getElementById('profitRate').value)||25;
+  const base=mat.total+lab.total+sub.total;
+  const exp=base*er/100, cost=base+exp;
+  const quote=pr<100?cost/(1-pr/100):cost;
+  const profit=quote-cost;
+  const pct=quote>0?profit/quote*100:0;
+  const quoteTax=quote*1.1;
+  const yen=n=>Math.round(n).toLocaleString('ja-JP')+'円';
+
+  const mList=mat.items.map(i=>`・${i.name}：${i.qty} × ${yen(i.unit)} = ${yen(i.amount)}`).join('\n')||'（未入力）';
+  const lList=lab.items.map(i=>`・${i.name}：${i.qty}人工 × ${yen(i.unit)} = ${yen(i.amount)}`).join('\n')||'（未入力）';
+  const sList=sub.items.length>0?sub.items.map(i=>`・${i.name}：${yen(i.amount)}`).join('\n'):'（なし）';
+  const rList=risks.length>0?risks.join('、'):'なし';
+
+  document.getElementById('notionOutput').textContent=
+`# 案件メモ｜${client}
+日付：${date}　現場：${address}
+工事種別：${workTypes.join('・')||'未選択'}
+
+## 現場状況
+${siteNote}
+
+## 寸法メモ
+${dimNote}
+
+## 原価概算
+| 項目 | 金額 |
+|------|------|
+| 材料費 | ${yen(mat.total)} |
+| 労務費 | ${yen(lab.total)} |
+| 外注費 | ${yen(sub.total)} |
+| 現場経費(${er}%) | ${yen(exp)} |
+| 原価合計 | ${yen(cost)} |
+| 見積金額(税抜) | ${yen(quote)} |
+| 見積金額(税込) | ${yen(quoteTax)} |
+| 粗利 | ${yen(profit)}（${pct.toFixed(1)}%） |
+
+## リスク
+${risks.length>0?risks.map(r=>'- '+r).join('\n'):'- なし'}
+${riskNote!=='（なし）'?'- '+riskNote:''}
+
+## 見積条件
+工期：${duration}　有効期限：${validity}　支払：${payment}
+
+## ステータス
+- [ ] 見積書作成
+- [ ] 施主提出
+- [ ] 受注確認`;
+
+  document.getElementById('chatgptPrompt').textContent=
+`あなたは建築工事の積算の専門家です。以下の現場情報と原価概算を確認し、①見落としている可能性のある工事項目、②各単価の妥当性、③合計金額の整合性について指摘してください。
+
+【工事概要】
+施主：${client}　現場：${address}
+工事種別：${workTypes.join('・')||'未選択'}
+現場状況：${siteNote}
+寸法メモ：${dimNote}
+
+【材料費】
+${mList}
+小計：${yen(mat.total)}
+
+【労務費】
+${lList}
+小計：${yen(lab.total)}
+
+【外注費】
+${sList}
+小計：${yen(sub.total)}
+
+原価合計：${yen(cost)}
+見積予定額（税抜）：${yen(quote)}
+粗利率：${pct.toFixed(1)}%
+
+【リスク要因】${rList}
+
+追加すべき項目・単価の修正提案を箇条書きで教えてください。`;
+
+  document.getElementById('perplexityPrompt').textContent=
+`以下の工事について、現在の相場単価と関連法規を教えてください。
+
+【工事種別】${workTypes.join('・')||'未選択'}
+【現場概要】${siteNote}
+
+【確認したい内容】
+1. 各工種の2024〜2025年の標準的な単価（材工込み）
+2. この工事に関係する建設業法・建築基準法上の注意点
+3. 補助金・助成金の該当可能性
+4. リスク項目への対処：${rList}
+
+出典URLも合わせて提示してください。`;
+
+  document.getElementById('claudePrompt').textContent=
+`あなたは工務店の経営者をサポートするAIアシスタントです。以下の現場調査データをもとに、施主に提出できる見積書の「たたき台」を作成してください。
+
+【施主情報】
+施主名：${client}　現場住所：${address}
+
+【工事概要】
+工事種別：${workTypes.join('・')||'未選択'}
+工期目安：${duration}
+現場状況：
+${siteNote}
+
+【原価明細（概算）】
+■材料費
+${mList}
+小計：${yen(mat.total)}
+
+■労務費
+${lList}
+小計：${yen(lab.total)}
+
+■外注費
+${sList}
+小計：${yen(sub.total)}
+
+■現場経費（${er}%）：${yen(exp)}
+■原価合計：${yen(cost)}
+■見積金額（税抜）：${yen(quote)}
+■見積金額（税込・10%）：${yen(quoteTax)}
+■粗利率目標：${pr}%
+
+【リスク・注意事項】
+${risks.length>0?risks.map(r=>'・'+r).join('\n'):'・特になし'}
+${riskNote!=='（なし）'?'・'+riskNote:''}
+
+【見積条件】
+有効期限：${validity}　支払条件：${payment}
+
+【出力してほしいもの】
+1. 施主向け見積書の文面（工事項目・金額・備考付き）
+2. この見積で特に注意すべきリスク3点
+3. 施主への説明で強調すべきポイント
+
+現実的な内容で作成してください。`;
+}
+
+function copyText(id,btnId){
+  const text=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById(btnId);
+    btn.textContent='COPIED ✓'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='COPY'; btn.classList.remove('copied'); },2500);
+  }).catch(()=>{
+    const el=document.getElementById(id);
+    const r=document.createRange(); r.selectNode(el);
+    window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+    document.execCommand('copy'); window.getSelection().removeAllRanges();
+  });
+}
+
+function resetAll(){
+  if(!confirm('新規案件を開始します。現在の入力内容は消去されます。')) return;
+  location.reload();
+}
+</script>
+</body>
+</html>
