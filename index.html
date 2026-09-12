@@ -2,6 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f1117">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9,7 +11,6 @@
 <meta name="apple-mobile-web-app-title" content="見積たたき台">
 <link rel="manifest" href="manifest.webmanifest">
 <title>現場メモ → 見積たたき台</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0f1117;
@@ -49,11 +50,11 @@
   [hidden] { display:none !important; }
   html { color-scheme: dark; }
   [data-theme="light"] { color-scheme: light; }
-  body { font-family:'Noto Sans JP',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
+  body { font-family:system-ui,-apple-system,'Hiragino Sans','Noto Sans JP','Yu Gothic UI',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:calc(84px + env(safe-area-inset-bottom)); }
 
   .header { background:var(--surface); border-bottom:1px solid var(--border); padding:calc(12px + env(safe-area-inset-top)) 16px 12px; position:sticky; top:0; z-index:100; }
   .header-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .header-title { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; white-space:nowrap; }
+  .header-title { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:11px; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; white-space:nowrap; }
   .header-tools { display:flex; gap:6px; align-items:center; }
   .icon-btn { background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--text2); font-size:13px; padding:6px 9px; cursor:pointer; font-family:inherit; line-height:1; }
   .icon-btn:active { transform:scale(0.95); }
@@ -63,21 +64,21 @@
   .step-dot.done { background:var(--success); }
   .step-label-row { display:flex; justify-content:space-between; align-items:baseline; margin-top:6px; }
   .step-label { font-size:17px; font-weight:700; line-height:1.2; }
-  .save-state { font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; }
+  .save-state { font-size:10px; color:var(--text3); font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
 
   .step-page { display:none; padding:16px; }
   .step-page.active { display:block; animation:fadeUp 0.25s ease; }
   @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
   .section { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; }
-  .section-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
-  .section-label .sub { font-family:'Noto Sans JP',sans-serif; text-transform:none; letter-spacing:0; font-size:11px; color:var(--text2); }
+  .section-label { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:10px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+  .section-label .sub { font-family:system-ui,-apple-system,'Hiragino Sans','Noto Sans JP','Yu Gothic UI',sans-serif; text-transform:none; letter-spacing:0; font-size:11px; color:var(--text2); }
 
   label.fld { display:block; font-size:12px; color:var(--text2); margin-bottom:5px; margin-top:14px; }
   label.fld:first-of-type { margin-top:0; }
   input[type="text"], input[type="number"], input[type="date"], textarea, select {
     width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px;
-    color:var(--text); font-family:'Noto Sans JP',system-ui,sans-serif; font-size:16px; padding:11px 13px;
+    color:var(--text); font-family:system-ui,-apple-system,'Hiragino Sans','Noto Sans JP','Yu Gothic UI',sans-serif; font-size:16px; padding:11px 13px;
     outline:none; transition:border-color 0.2s; -webkit-appearance:none; appearance:none;
   }
   input:focus, textarea:focus, select:focus { border-color:var(--accent); }
@@ -101,19 +102,19 @@
   .cost-row input, .cost-row select { font-size:14px; padding:9px 8px; background:var(--surface); }
   .cost-row select { padding-right:4px; text-align:center; }
   .cost-row .op { text-align:center; color:var(--text3); font-size:12px; }
-  .cost-row .amt { font-family:'DM Mono',monospace; font-size:13px; text-align:right; color:var(--text); padding-right:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cost-row .amt { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:13px; text-align:right; color:var(--text); padding-right:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .cost-row .amt.zero { color:var(--text3); }
   .del-btn { width:32px; height:100%; min-height:38px; background:var(--danger-bg); border:1px solid rgba(232,85,85,0.3); border-radius:6px; color:var(--danger); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .add-btn { width:100%; background:transparent; border:1.5px dashed var(--border); border-radius:8px; color:var(--text3); font-size:13px; padding:10px; cursor:pointer; margin-top:4px; transition:border-color 0.2s,color 0.2s; font-family:inherit; }
   .add-btn:hover { border-color:var(--accent2); color:var(--accent2); }
   .sec-sub { display:flex; justify-content:space-between; font-size:12px; color:var(--text2); padding:6px 4px 0; }
-  .sec-sub b { font-family:'DM Mono',monospace; color:var(--text); font-weight:500; }
+  .sec-sub b { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; color:var(--text); font-weight:500; }
 
   .total-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px; margin-top:4px; }
   .total-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:13px; color:var(--text2); border-bottom:1px solid var(--border); gap:8px; }
   .total-row:last-child { border-bottom:none; }
   .total-row.main { font-size:15px; font-weight:700; color:var(--accent); padding-top:10px; }
-  .total-row span:last-child { font-family:'DM Mono',monospace; font-size:14px; white-space:nowrap; }
+  .total-row span:last-child { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:14px; white-space:nowrap; }
   .total-row.main span:last-child { font-size:18px; }
   .total-row.sum { color:var(--text); font-weight:500; }
   .total-row .note { font-size:10px; color:var(--text3); margin-left:4px; font-weight:400; }
@@ -124,7 +125,7 @@
   .meter-fill { height:100%; border-radius:4px; transition:width 0.4s,background 0.4s; }
 
   .nav-row { display:flex; gap:10px; margin-top:16px; }
-  .btn { flex:1; padding:14px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; border:none; font-family:'Noto Sans JP',system-ui,sans-serif; transition:opacity 0.2s,transform 0.1s; }
+  .btn { flex:1; padding:14px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; border:none; font-family:system-ui,-apple-system,'Hiragino Sans','Noto Sans JP','Yu Gothic UI',sans-serif; transition:opacity 0.2s,transform 0.1s; }
   .btn:active { transform:scale(0.97); }
   .btn-primary { background:var(--accent); color:#0f1117; }
   .btn-secondary { background:var(--surface2); border:1px solid var(--border); color:var(--text2); }
@@ -148,9 +149,9 @@
   .copy-title { font-size:12px; font-weight:700; color:var(--text2); letter-spacing:0.05em; }
   .copy-desc { font-size:11px; color:var(--text3); font-weight:400; display:block; margin-top:2px; }
   .copy-actions { display:flex; gap:6px; flex-shrink:0; }
-  .copy-btn { background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--accent2); font-size:11px; padding:6px 12px; cursor:pointer; font-family:'DM Mono',monospace; }
+  .copy-btn { background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--accent2); font-size:11px; padding:6px 12px; cursor:pointer; font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
   .copy-btn.copied { background:var(--success-bg); border-color:var(--success); color:var(--success); }
-  .prompt-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px; font-size:12px; line-height:1.85; color:var(--text); white-space:pre-wrap; word-break:break-all; max-height:34vh; overflow-y:auto; font-family:'DM Mono',monospace; }
+  .prompt-box { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px; font-size:12px; line-height:1.85; color:var(--text); white-space:pre-wrap; word-break:break-all; max-height:34vh; overflow-y:auto; font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
   details.out summary { cursor:pointer; list-style:none; }
   details.out summary::-webkit-details-marker { display:none; }
   details.out .prompt-box { margin-top:8px; }
@@ -165,14 +166,14 @@
   .case-item { display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:11px 12px; margin-bottom:8px; }
   .case-main { flex:1; min-width:0; cursor:pointer; }
   .case-name { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .case-meta { font-size:11px; color:var(--text2); margin-top:2px; font-family:'DM Mono',monospace; }
+  .case-meta { font-size:11px; color:var(--text2); margin-top:2px; font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
   .case-del { background:transparent; border:none; color:var(--text3); font-size:18px; cursor:pointer; padding:4px 6px; }
   .empty { color:var(--text3); font-size:13px; text-align:center; padding:20px 0; }
 
   .toast { position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px); background:var(--text); color:var(--bg); padding:10px 18px; border-radius:20px; font-size:13px; opacity:0; transition:all 0.25s; z-index:300; pointer-events:none; white-space:nowrap; }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-  .fmt-num { text-align:right; font-family:'DM Mono',monospace; }
+  .fmt-num { text-align:right; font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
   @media (min-width:640px) { .step-page, .header { max-width:640px; margin-left:auto; margin-right:auto; } .header { position:sticky; } .panel { max-width:640px; margin:0 auto; } }
 </style>
 </head>
@@ -183,13 +184,13 @@
     <div class="header-title">現場 → 見積たたき台</div>
     <div class="header-tools">
       <div class="step-indicator" aria-label="ステップ">
-        <div class="step-dot active" id="dot0" onclick="goStep(0)"></div>
-        <div class="step-dot" id="dot1" onclick="goStep(1)"></div>
-        <div class="step-dot" id="dot2" onclick="goStep(2)"></div>
-        <div class="step-dot" id="dot3" onclick="goStep(3)"></div>
+        <div class="step-dot active" id="dot0" data-step="0"></div>
+        <div class="step-dot" id="dot1" data-step="1"></div>
+        <div class="step-dot" id="dot2" data-step="2"></div>
+        <div class="step-dot" id="dot3" data-step="3"></div>
       </div>
-      <button class="icon-btn" onclick="openPanel('cases')" title="案件履歴">📁</button>
-      <button class="icon-btn" onclick="openPanel('settings')" title="設定">⚙</button>
+      <button class="icon-btn" data-panel="cases" title="案件履歴">📁</button>
+      <button class="icon-btn" data-panel="settings" title="設定">⚙</button>
     </div>
   </div>
   <div class="step-label-row">
@@ -225,7 +226,7 @@
     <input type="text" id="photoNote" placeholder="例）Googleフォト 2026-09-10 山田邸" autocomplete="off">
   </div>
   <div class="nav-row">
-    <button class="btn btn-primary" onclick="goStep(1)">次へ　原価入力 →</button>
+    <button class="btn btn-primary" data-step="1">次へ　原価入力 →</button>
   </div>
 </div>
 
@@ -236,19 +237,19 @@
   <div class="section">
     <div class="section-label">材料費 <span class="sub">数量 × 単価</span></div>
     <div id="materialRows"></div>
-    <button class="add-btn" onclick="addRow('material')">＋ 材料を追加</button>
+    <button class="add-btn" data-addrow="material">＋ 材料を追加</button>
     <div class="sec-sub"><span>材料費 小計</span><b id="matSub">¥0</b></div>
   </div>
   <div class="section">
     <div class="section-label">労務費（自社手間） <span class="sub">人工 × 単価</span></div>
     <div id="laborRows"></div>
-    <button class="add-btn" onclick="addRow('labor')">＋ 工種を追加</button>
+    <button class="add-btn" data-addrow="labor">＋ 工種を追加</button>
     <div class="sec-sub"><span>労務費 小計</span><b id="labSub">¥0</b></div>
   </div>
   <div class="section">
     <div class="section-label">外注費 <span class="sub">一式なら数量 1</span></div>
     <div id="subRows"></div>
-    <button class="add-btn" onclick="addRow('sub')">＋ 外注を追加</button>
+    <button class="add-btn" data-addrow="sub">＋ 外注を追加</button>
     <div class="sec-sub"><span>外注費 小計</span><b id="subSub">¥0</b></div>
   </div>
 
@@ -283,8 +284,8 @@
     </div>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="goStep(0)">← 戻る</button>
-    <button class="btn btn-primary" onclick="goStep(2)">次へ　リスク確認 →</button>
+    <button class="btn btn-secondary" data-step="0">← 戻る</button>
+    <button class="btn btn-primary" data-step="2">次へ　リスク確認 →</button>
   </div>
 </div>
 
@@ -315,8 +316,8 @@
     <textarea id="excluded" rows="2" placeholder="例）カーテン・照明器具は別途、既存家具の移動は施主側"></textarea>
   </div>
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="goStep(1)">← 戻る</button>
-    <button class="btn btn-primary" onclick="goStep(3)">出力を生成 →</button>
+    <button class="btn btn-secondary" data-step="1">← 戻る</button>
+    <button class="btn btn-primary" data-step="3">出力を生成 →</button>
   </div>
 </div>
 
@@ -324,14 +325,14 @@
 <div class="step-page" id="step3">
   <div id="outCheck"></div>
   <div class="nav-row" style="margin:0 0 16px">
-    <button class="btn btn-success" onclick="saveCase(true)">💾 案件を保存</button>
-    <button class="btn btn-secondary" onclick="shareText()" id="shareBtn">共有…</button>
+    <button class="btn btn-success" data-act="saveCase">💾 案件を保存</button>
+    <button class="btn btn-secondary" data-act="shareText" id="shareBtn">共有…</button>
   </div>
 
   <div class="copy-section">
     <div class="copy-header">
       <div class="copy-title">✍️ Claude用（見積書たたき台作成）<span class="copy-desc">主力。見積書の文面・リスク・説明ポイントを生成</span></div>
-      <div class="copy-actions"><button class="copy-btn" id="copyClaude" onclick="copyText('claudePrompt','copyClaude')">COPY</button></div>
+      <div class="copy-actions"><button class="copy-btn" id="copyClaude" data-copy="claudePrompt">COPY</button></div>
     </div>
     <div class="prompt-box" id="claudePrompt"></div>
   </div>
@@ -339,7 +340,7 @@
   <div class="copy-section">
     <div class="copy-header">
       <div class="copy-title">🔍 Perplexity用（相場・法規確認）<span class="copy-desc">単価の相場と関連法規・補助金を出典付きで確認</span></div>
-      <div class="copy-actions"><button class="copy-btn" id="copyPerplexity" onclick="copyText('perplexityPrompt','copyPerplexity')">COPY</button></div>
+      <div class="copy-actions"><button class="copy-btn" id="copyPerplexity" data-copy="perplexityPrompt">COPY</button></div>
     </div>
     <div class="prompt-box" id="perplexityPrompt"></div>
   </div>
@@ -347,7 +348,7 @@
   <div class="copy-section">
     <div class="copy-header">
       <div class="copy-title">🧮 AI積算チェック用（Claude / ChatGPT）<span class="copy-desc">抜け項目・単価の妥当性・整合性の指摘</span></div>
-      <div class="copy-actions"><button class="copy-btn" id="copyChatGPT" onclick="copyText('chatgptPrompt','copyChatGPT')">COPY</button></div>
+      <div class="copy-actions"><button class="copy-btn" id="copyChatGPT" data-copy="chatgptPrompt">COPY</button></div>
     </div>
     <div class="prompt-box" id="chatgptPrompt"></div>
   </div>
@@ -355,7 +356,7 @@
   <div class="copy-section">
     <div class="copy-header">
       <div class="copy-title">📋 案件記録用（Markdown）<span class="copy-desc">Notion・Googleドキュメント等に貼り付け</span></div>
-      <div class="copy-actions"><button class="copy-btn" id="copyNotion" onclick="copyText('notionOutput','copyNotion')">COPY</button></div>
+      <div class="copy-actions"><button class="copy-btn" id="copyNotion" data-copy="notionOutput">COPY</button></div>
     </div>
     <div class="prompt-box" id="notionOutput"></div>
   </div>
@@ -363,30 +364,30 @@
   <div class="copy-section">
     <div class="copy-header">
       <div class="copy-title">📊 Excel貼り付け用（タブ区切り）<span class="copy-desc">見積テンプレートの明細に貼り付け：区分／品名／数量／単位／単価／金額</span></div>
-      <div class="copy-actions"><button class="copy-btn" id="copyTsv" onclick="copyText('tsvOutput','copyTsv')">COPY</button></div>
+      <div class="copy-actions"><button class="copy-btn" id="copyTsv" data-copy="tsvOutput">COPY</button></div>
     </div>
     <details class="out"><summary class="hint" style="margin:0">内容を表示 ▾</summary><div class="prompt-box" id="tsvOutput"></div></details>
   </div>
 
   <div class="nav-row">
-    <button class="btn btn-secondary" onclick="goStep(2)">← 修正</button>
-    <button class="btn btn-primary" onclick="newCase()">新規案件 ＋</button>
+    <button class="btn btn-secondary" data-step="2">← 修正</button>
+    <button class="btn btn-primary" data-act="newCase">新規案件 ＋</button>
   </div>
 </div>
 
 <!-- 案件履歴 / 設定パネル -->
-<div class="panel-bg" id="panelBg" onclick="closePanel()"></div>
+<div class="panel-bg" id="panelBg" data-act="closePanel"></div>
 <div class="panel" id="panelCases">
-  <div class="panel-head"><div class="panel-title">📁 案件履歴</div><button class="icon-btn" onclick="closePanel()">閉じる</button></div>
+  <div class="panel-head"><div class="panel-title">📁 案件履歴</div><button class="icon-btn" data-act="closePanel">閉じる</button></div>
   <div class="hint" style="margin-bottom:10px">この端末のブラウザ内に保存されています（サーバー送信なし）。端末変更やブラウザデータ削除で消えるため、確定した案件はMarkdown／Excel出力で保管してください。</div>
   <div id="caseList"></div>
   <div class="nav-row">
-    <button class="btn btn-secondary small" onclick="exportAll()">全案件をJSONで書き出し</button>
-    <label class="btn btn-secondary small" style="text-align:center">JSON読み込み<input type="file" accept="application/json" style="display:none" onchange="importAll(this)"></label>
+    <button class="btn btn-secondary small" data-act="exportAll">全案件をJSONで書き出し</button>
+    <label class="btn btn-secondary small" style="text-align:center">JSON読み込み<input type="file" id="importFile" accept="application/json,.json" style="display:none"></label>
   </div>
 </div>
 <div class="panel" id="panelSettings">
-  <div class="panel-head"><div class="panel-title">⚙ 設定（既定値）</div><button class="icon-btn" onclick="closePanel()">閉じる</button></div>
+  <div class="panel-head"><div class="panel-title">⚙ 設定（既定値）</div><button class="icon-btn" data-act="closePanel">閉じる</button></div>
   <label class="fld" for="sCompany">屋号・会社名（出力に記載）</label>
   <input type="text" id="sCompany" placeholder="例）○○建築">
   <label class="fld" for="sArea">営業地域（相場確認プロンプトに使用）</label>
@@ -415,9 +416,12 @@
     <option value="light">ライト（屋外・日中向け）</option>
   </select>
   <div class="nav-row">
-    <button class="btn btn-primary" onclick="saveSettings()">保存</button>
+    <button class="btn btn-primary" data-act="saveSettings">保存</button>
   </div>
   <div class="hint" style="margin-top:12px">既定値は「新規案件」開始時に適用されます。入力中の案件の経費率・粗利率は STEP 2 で個別に変更できます。</div>
+  <div class="divider"></div>
+  <div class="hint">案件データ（施主名・住所など）はこの端末のブラウザ内にのみ保存されます。端末を手放す・共用する前に消去してください。</div>
+  <div class="nav-row"><button class="btn btn-secondary small" data-act="wipeAll">この端末の全データを消去</button></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -425,481 +429,6 @@
 <datalist id="dlLabor"></datalist>
 <datalist id="dlSub"></datalist>
 
-<script>
-/* ============================================================
-   現場メモ → 見積たたき台  v2
-   - 自動保存（localStorage）／案件履歴／設定
-   - 単位・行金額・法定福利費・消費税・端数処理
-   - リスクと原価項目の整合チェック
-   ============================================================ */
-const LS_DRAFT='mitsumori.draft', LS_CASES='mitsumori.cases', LS_SETTINGS='mitsumori.settings', LS_SUGGEST='mitsumori.suggest';
-
-const WORK_TYPES=['新築工事','増築工事','リフォーム','内装工事','外装工事','屋根工事','水廻り工事','外構工事','修理・メンテナンス','耐震・断熱改修'];
-const RISKS=['足場が必要','アスベスト懸念','雨漏り・水損あり','シロアリ懸念','腐朽・腐食あり','隣地近接','狭小・搬入困難','解体が必要','確認申請が必要','追加工事の可能性大','施主支給あり','工期が短い','居住中の工事','積雪期にかかる','電気・給排水の移設'];
-const UNITS={material:['㎡','m','本','枚','袋','個','㎥','坪','式','セット'],labor:['人工','式'],sub:['式','㎡','m','本','個','箇所','日']};
-/* リスク → 原価項目に含まれているべきキーワード */
-const RISK_CHECKS=[
-  {risk:'足場が必要',kw:['足場'],msg:'「足場が必要」だが原価に足場の項目がない'},
-  {risk:'解体が必要',kw:['解体','撤去'],msg:'「解体が必要」だが解体・撤去の項目がない'},
-  {risk:'アスベスト懸念',kw:['アスベスト','石綿','分析','調査'],msg:'「アスベスト懸念」だが事前調査・分析費の項目がない（2023年10月以降、有資格者による事前調査が義務）'},
-  {risk:'確認申請が必要',kw:['申請','設計','確認'],msg:'「確認申請が必要」だが申請・設計費の項目がない'},
-  {risk:'シロアリ懸念',kw:['防蟻','シロアリ','防腐'],msg:'「シロアリ懸念」だが防蟻・防腐処理の項目がない'},
-  {risk:'電気・給排水の移設',kw:['電気','給排水','配管','配線','設備'],msg:'「電気・給排水の移設」だが設備工事の項目がない'},
-];
-const DEFAULT_SETTINGS={company:'',area:'',expense:10,profit:25,tax:10,welfare:0,round:'none',warn:20,theme:'dark'};
-
-let settings=loadJSON(LS_SETTINGS,DEFAULT_SETTINGS);
-let currentStep=0, currentCaseId=null, saveTimer=null;
-const stepLabels=['STEP 1　現場情報','STEP 2　原価入力','STEP 3　リスク確認','STEP 4　出力'];
-
-/* ---------- utilities ---------- */
-function loadJSON(k,def){ try{ const v=localStorage.getItem(k); return v?Object.assign({},def,JSON.parse(v)):def; }catch(e){ return def; } }
-function loadArr(k){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):[]; }catch(e){ return []; } }
-function saveLS(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } }
-function $(id){ return document.getElementById(id); }
-function todayLocal(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function fmt(n){ return '¥'+Math.round(n).toLocaleString('ja-JP'); }
-function yen(n){ return Math.round(n).toLocaleString('ja-JP')+'円'; }
-function num(v,def){ const n=parseFloat(v); return Number.isFinite(n)?n:def; }
-function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),1800); }
-function applyTheme(){ document.documentElement.setAttribute('data-theme',settings.theme==='light'?'light':'dark'); document.querySelector('meta[name=theme-color]').content=settings.theme==='light'?'#ffffff':'#0f1117'; }
-
-/* ---------- init ---------- */
-window.addEventListener('DOMContentLoaded',()=>{
-  applyTheme();
-  $('workTypeGroup').innerHTML=WORK_TYPES.map(w=>`<label class="check-item"><input type="checkbox" value="${w}" onchange="this.parentNode.classList.toggle('checked',this.checked);scheduleSave()"><div class="check-icon">✓</div>${w}</label>`).join('');
-  $('riskTags').innerHTML=RISKS.map(r=>`<span class="risk-tag" onclick="this.classList.toggle('selected');scheduleSave()">${r}</span>`).join('');
-  document.querySelectorAll('input,textarea,select').forEach(el=>{ if(!el.closest('.panel')) el.addEventListener('input',scheduleSave); });
-  $('expenseRate').addEventListener('input',calcTotals); $('profitRate').addEventListener('input',calcTotals);
-  refreshDatalists();
-  const draft=loadJSON(LS_DRAFT,null);
-  if(draft && draft.client!==undefined){ applyState(draft); currentCaseId=draft.id||null; $('saveState').textContent='下書き復元'; }
-  else { blankCase(); }
-  goStep(draft&&draft.step?draft.step:0,true);
-  if(!navigator.share) $('shareBtn').style.display='none';
-  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
-});
-
-function blankCase(){
-  $('surveyDate').value=todayLocal();
-  $('expenseRate').value=settings.expense; $('profitRate').value=settings.profit;
-  $('materialRows').innerHTML=''; $('laborRows').innerHTML=''; $('subRows').innerHTML='';
-  addRow('material'); addRow('labor');
-  calcTotals();
-}
-
-/* ---------- steps ---------- */
-function goStep(n,silent){
-  if(n===3 && !silent){ if(!validateBeforeOutput()) return; }
-  document.querySelectorAll('.step-page').forEach((p,i)=>p.classList.toggle('active',i===n));
-  document.querySelectorAll('.step-dot').forEach((d,i)=>{ d.classList.toggle('active',i===n); d.classList.toggle('done',i<n); });
-  currentStep=n; $('stepLabel').textContent=stepLabels[n];
-  window.scrollTo(0,0);
-  if(n===1) calcTotals();
-  if(n===3) generateOutput();
-  if(!silent) scheduleSave();
-}
-function validateBeforeOutput(){
-  const c=compute();
-  if(c.base===0){ return confirm('原価が未入力です（合計 ¥0）。このまま出力しますか？'); }
-  return true;
-}
-
-/* ---------- rows ---------- */
-function addRow(type,data){
-  const c=$(type+'Rows');
-  const d=document.createElement('div'); d.className='cost-row'; d.dataset.type=type;
-  const p1=type==='material'?'品名・規格':type==='labor'?'工種（例：大工手間）':'業者名・工種';
-  const p2=type==='labor'?'人工':'数量';
-  const units=UNITS[type].map(u=>`<option value="${u}">${u}</option>`).join('');
-  const dl=type==='material'?'dlMaterial':type==='labor'?'dlLabor':'dlSub';
-  d.innerHTML=`<div class="r1">
-      <input type="text" class="nm" placeholder="${p1}" list="${dl}" autocomplete="off">
-      <select class="un">${units}</select>
-      <div class="del-btn" role="button" aria-label="削除">×</div>
-    </div>
-    <div class="r2">
-      <input type="number" class="qt" placeholder="${p2}" inputmode="decimal" min="0" step="any">
-      <span class="op">×</span>
-      <input type="number" class="up" placeholder="単価" inputmode="numeric" min="0" step="any">
-      <div class="amt zero">¥0</div>
-    </div>`;
-  const nm=d.querySelector('.nm'), un=d.querySelector('.un'), qt=d.querySelector('.qt'), up=d.querySelector('.up');
-  if(data){ nm.value=data.name||''; if(data.unit) un.value=data.unit; qt.value=data.qty??''; up.value=data.unit_price??''; }
-  else if(type==='sub'){ qt.value=1; }
-  [nm,un,qt,up].forEach(el=>el.addEventListener('input',()=>{ calcTotals(); scheduleSave(); }));
-  nm.addEventListener('change',()=>{ const s=findSuggest(type,nm.value); if(s){ if(!up.value&&s.unit_price) up.value=s.unit_price; if(s.unit&&UNITS[type].includes(s.unit)) un.value=s.unit; calcTotals(); } });
-  d.querySelector('.del-btn').addEventListener('click',()=>{ d.remove(); calcTotals(); scheduleSave(); });
-  c.appendChild(d);
-  return d;
-}
-function getRowData(type){
-  const items=[]; let total=0;
-  document.querySelectorAll('#'+type+'Rows .cost-row').forEach(r=>{
-    const name=r.querySelector('.nm').value.trim(), unit=r.querySelector('.un').value;
-    const qty=num(r.querySelector('.qt').value,0), unit_price=num(r.querySelector('.up').value,0);
-    const amount=qty*unit_price; total+=amount;
-    const a=r.querySelector('.amt'); a.textContent=fmt(amount); a.classList.toggle('zero',amount===0);
-    if(name||qty||unit_price) items.push({name:name||'（未記入）',unit,qty,unit_price,amount,priceMissing:!!name&&qty>0&&unit_price===0});
-  });
-  return {items,total};
-}
-
-/* ---------- calculation (single source of truth) ---------- */
-function roundQuote(q){
-  switch(settings.round){
-    case 'up1000': return Math.ceil(q/1000)*1000;
-    case 'round1000': return Math.round(q/1000)*1000;
-    case 'down1000': return Math.floor(q/1000)*1000;
-    default: return Math.round(q);
-  }
-}
-function compute(){
-  const mat=getRowData('material'), lab=getRowData('labor'), sub=getRowData('sub');
-  const er=Math.max(0,num($('expenseRate').value,settings.expense))/100;
-  const pr=Math.min(0.95,Math.max(0,num($('profitRate').value,settings.profit)/100));
-  const wr=Math.max(0,num(settings.welfare,0))/100, tr=Math.max(0,num(settings.tax,10))/100;
-  const base=mat.total+lab.total+sub.total;
-  const welfare=lab.total*wr;
-  const exp=(base+welfare)*er;
-  const cost=base+welfare+exp;
-  const quoteRaw=cost/(1-pr);
-  const quote=roundQuote(quoteRaw);
-  const profit=quote-cost, pct=quote>0?profit/quote*100:0;
-  const tax=Math.floor(quote*tr), gross=quote+tax;
-  return {mat,lab,sub,er,pr,wr,tr,base,welfare,exp,cost,quoteRaw,quote,profit,pct,tax,gross};
-}
-function calcTotals(){
-  const c=compute();
-  $('matSub').textContent=fmt(c.mat.total); $('labSub').textContent=fmt(c.lab.total); $('subSub').textContent=fmt(c.sub.total);
-  $('matTotal').textContent=fmt(c.mat.total); $('labTotal').textContent=fmt(c.lab.total); $('subTotal').textContent=fmt(c.sub.total);
-  $('welfareRow').hidden=!(c.wr>0); $('welfareTotal').textContent=fmt(c.welfare); $('welfareNote').textContent=c.wr>0?`（労務費×${settings.welfare}%）`:'';
-  $('expNote').textContent=`（${(c.er*100).toFixed(1).replace(/\.0$/,'')}%）`;
-  $('expTotal').textContent=fmt(c.exp); $('costTotal').textContent=fmt(c.cost);
-  $('quoteTotal').textContent=fmt(c.quote); $('roundNote').textContent=settings.round!=='none'?'（千円処理後）':'';
-  $('taxNote').textContent=`（${settings.tax}%）`; $('taxTotal').textContent=fmt(c.tax); $('grossTotal').textContent=fmt(c.gross);
-  $('profitTotal').textContent=fmt(c.profit);
-  $('profitPct').textContent=c.pct.toFixed(1)+'%';
-  const f=$('meterFill'); f.style.width=Math.min(c.pct,100)+'%';
-  const warn=num(settings.warn,20);
-  f.style.background=c.pct<warn*0.75?'var(--danger)':c.pct<warn?'var(--accent)':'var(--success)';
-  renderChecks(c,'checkBox');
-}
-
-/* ---------- consistency checks ---------- */
-function buildWarnings(c){
-  const w=[];
-  const allNames=[...c.mat.items,...c.lab.items,...c.sub.items].map(i=>i.name).join('|');
-  const risks=getSelectedRisks();
-  if(c.base===0) w.push('原価が未入力です');
-  if(c.base>0 && c.lab.total===0 && c.sub.total===0) w.push('労務費・外注費が0円です（手間の見込みが抜けていませんか）');
-  const missing=[...c.mat.items,...c.lab.items,...c.sub.items].filter(i=>i.priceMissing).map(i=>i.name);
-  if(missing.length) w.push('単価未入力：'+missing.join('、')+'（合計に含まれていません）');
-  const warn=num(settings.warn,20);
-  if(c.quote>0 && c.pct<warn) w.push(`実効粗利率 ${c.pct.toFixed(1)}% が警告ライン ${warn}% を下回っています`);
-  RISK_CHECKS.forEach(rc=>{ if(risks.includes(rc.risk) && !rc.kw.some(k=>allNames.includes(k))) w.push(rc.msg); });
-  const wt=getCheckedValues('workTypeGroup');
-  const demolish=risks.includes('解体が必要')||wt.some(t=>['リフォーム','内装工事','外装工事','屋根工事','水廻り工事'].includes(t));
-  if(c.base>0 && demolish && !/処分|廃棄|廃材|運搬/.test(allNames)) w.push('廃材処分費・運搬費の項目がありません（改修工事では通常発生）');
-  if(risks.includes('施主支給あり') && !/施主支給|支給/.test(allNames+$('excluded').value)) w.push('「施主支給あり」の品目を別途工事・除外事項に明記してください');
-  return w;
-}
-function renderChecks(c,targetId){
-  const w=buildWarnings(c);
-  const box=$(targetId);
-  if(w.length===0){ box.innerHTML=c.base>0?'<div class="warn-box ok">✓ 整合チェック：指摘なし</div>':''; return; }
-  box.innerHTML=`<div class="warn-box"><div class="wt">⚠ 整合チェック（${w.length}件）</div><ul>${w.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`;
-}
-
-/* ---------- state ---------- */
-function getCheckedValues(gid){ return Array.from(document.querySelectorAll('#'+gid+' input:checked')).map(i=>i.value); }
-function getSelectedRisks(){ return Array.from(document.querySelectorAll('#riskTags .risk-tag.selected')).map(t=>t.textContent); }
-function rowsRaw(type){ return Array.from(document.querySelectorAll('#'+type+'Rows .cost-row')).map(r=>({name:r.querySelector('.nm').value,unit:r.querySelector('.un').value,qty:r.querySelector('.qt').value,unit_price:r.querySelector('.up').value})); }
-function getState(){
-  return {
-    id:currentCaseId, step:currentStep, updated:Date.now(),
-    client:$('clientName').value, address:$('address').value, date:$('surveyDate').value, caseNo:$('caseNo').value,
-    workTypes:getCheckedValues('workTypeGroup'), siteNote:$('siteNote').value, dimNote:$('dimensionNote').value, photoNote:$('photoNote').value,
-    material:rowsRaw('material'), labor:rowsRaw('labor'), sub:rowsRaw('sub'),
-    expenseRate:$('expenseRate').value, profitRate:$('profitRate').value,
-    risks:getSelectedRisks(), riskNote:$('riskNote').value,
-    duration:$('duration').value, validity:$('validity').value, payment:$('payment').value, excluded:$('excluded').value
-  };
-}
-function applyState(s){
-  $('clientName').value=s.client||''; $('address').value=s.address||''; $('surveyDate').value=s.date||todayLocal(); $('caseNo').value=s.caseNo||'';
-  document.querySelectorAll('#workTypeGroup input').forEach(i=>{ i.checked=(s.workTypes||[]).includes(i.value); i.parentNode.classList.toggle('checked',i.checked); });
-  $('siteNote').value=s.siteNote||''; $('dimensionNote').value=s.dimNote||''; $('photoNote').value=s.photoNote||'';
-  ['material','labor','sub'].forEach(t=>{ $(t+'Rows').innerHTML=''; (s[t]||[]).forEach(r=>addRow(t,r)); });
-  if(!$('materialRows').children.length) addRow('material');
-  if(!$('laborRows').children.length) addRow('labor');
-  $('expenseRate').value=s.expenseRate??settings.expense; $('profitRate').value=s.profitRate??settings.profit;
-  document.querySelectorAll('#riskTags .risk-tag').forEach(t=>t.classList.toggle('selected',(s.risks||[]).includes(t.textContent)));
-  $('riskNote').value=s.riskNote||''; $('duration').value=s.duration||''; $('validity').value=s.validity||''; $('payment').value=s.payment||$('payment').options[0].value; $('excluded').value=s.excluded||'';
-  calcTotals();
-}
-function scheduleSave(){
-  clearTimeout(saveTimer);
-  $('saveState').textContent='…';
-  saveTimer=setTimeout(()=>{ const ok=saveLS(LS_DRAFT,getState()); $('saveState').textContent=ok?'自動保存済':'保存不可'; },400);
-}
-
-/* ---------- cases ---------- */
-function saveCase(notify){
-  const s=getState(); const c=compute();
-  if(!currentCaseId) currentCaseId=String(Date.now());
-  s.id=currentCaseId; s.quote=c.quote; s.pct=c.pct;
-  const cases=loadArr(LS_CASES).filter(x=>x.id!==s.id); cases.unshift(s);
-  saveLS(LS_CASES,cases.slice(0,200)); saveLS(LS_DRAFT,s);
-  learnSuggest(c);
-  if(notify) toast('案件を保存しました');
-}
-function newCase(){
-  if(!confirm('新規案件を開始します。現在の案件は保存しますか？\n（OK＝保存して新規／キャンセル＝中止）')) return;
-  saveCase(false);
-  currentCaseId=null;
-  applyState({}); blankCase(); saveLS(LS_DRAFT,getState());
-  goStep(0,true); toast('新規案件を開始');
-}
-function renderCases(){
-  const cases=loadArr(LS_CASES);
-  if(!cases.length){ $('caseList').innerHTML='<div class="empty">保存済み案件はありません</div>'; return; }
-  $('caseList').innerHTML=cases.map(c=>`<div class="case-item${c.id===currentCaseId?' current':''}">
-      <div class="case-main" onclick="loadCase('${c.id}')">
-        <div class="case-name">${esc(c.client||'（施主未記入）')}${c.caseNo?' <span style="color:var(--text3);font-weight:400">#'+esc(c.caseNo)+'</span>':''}${c.id===currentCaseId?' <span style="color:var(--accent);font-size:11px">編集中</span>':''}</div>
-        <div class="case-meta">${esc(c.date||'')}　${(c.workTypes||[]).join('・')||'種別未選択'}　税抜 ${fmt(c.quote||0)}</div>
-      </div>
-      <button class="case-del" onclick="deleteCase('${c.id}')" aria-label="削除">🗑</button>
-    </div>`).join('');
-}
-function loadCase(id){
-  const c=loadArr(LS_CASES).find(x=>x.id===id); if(!c) return;
-  if(currentCaseId!==id && hasContent()){ if(!confirm('現在の入力内容を保存してから切り替えますか？\n（OK＝保存して切替／キャンセル＝中止）')) return; saveCase(false); }
-  currentCaseId=id; applyState(c); saveLS(LS_DRAFT,getState()); closePanel(); goStep(0,true); toast('読み込みました');
-}
-function deleteCase(id){
-  if(!confirm('この案件を削除しますか？')) return;
-  saveLS(LS_CASES,loadArr(LS_CASES).filter(x=>x.id!==id));
-  if(currentCaseId===id) currentCaseId=null;
-  renderCases();
-}
-function hasContent(){ const s=getState(); return !!(s.client||s.siteNote||compute().base>0); }
-function exportAll(){
-  const data={exported:new Date().toISOString(),settings,cases:loadArr(LS_CASES)};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mitsumori_cases_'+todayLocal()+'.json'; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-}
-function importAll(input){
-  const f=input.files[0]; if(!f) return;
-  const rd=new FileReader();
-  rd.onload=()=>{ try{
-    const d=JSON.parse(rd.result); const inc=Array.isArray(d.cases)?d.cases:[];
-    const cur=loadArr(LS_CASES); const ids=new Set(cur.map(x=>x.id));
-    inc.forEach(c=>{ if(c&&c.id&&!ids.has(c.id)) cur.push(c); });
-    cur.sort((a,b)=>(b.updated||0)-(a.updated||0)); saveLS(LS_CASES,cur); renderCases(); toast(inc.length+'件を取り込みました');
-  }catch(e){ alert('読み込みに失敗しました（JSON形式を確認してください）'); } input.value=''; };
-  rd.readAsText(f);
-}
-
-/* ---------- suggestions (learned from saved cases) ---------- */
-function learnSuggest(c){
-  const sg=loadJSON(LS_SUGGEST,{material:{},labor:{},sub:{}});
-  [['material',c.mat],['labor',c.lab],['sub',c.sub]].forEach(([t,d])=>{ d.items.forEach(i=>{ if(i.name&&i.name!=='（未記入）'&&i.unit_price>0) sg[t][i.name]={unit:i.unit,unit_price:i.unit_price}; }); });
-  saveLS(LS_SUGGEST,sg); refreshDatalists();
-}
-function findSuggest(type,name){ const sg=loadJSON(LS_SUGGEST,{material:{},labor:{},sub:{}}); return sg[type]&&sg[type][name.trim()]; }
-function refreshDatalists(){
-  const sg=loadJSON(LS_SUGGEST,{material:{},labor:{},sub:{}});
-  [['material','dlMaterial'],['labor','dlLabor'],['sub','dlSub']].forEach(([t,id])=>{ $(id).innerHTML=Object.keys(sg[t]||{}).sort().map(n=>`<option value="${esc(n)}">`).join(''); });
-}
-
-/* ---------- panels / settings ---------- */
-function openPanel(which){
-  $('panelBg').classList.add('open');
-  if(which==='cases'){ renderCases(); $('panelCases').classList.add('open'); }
-  else { $('sCompany').value=settings.company; $('sArea').value=settings.area; $('sExpense').value=settings.expense; $('sProfit').value=settings.profit; $('sTax').value=settings.tax; $('sWelfare').value=settings.welfare; $('sRound').value=settings.round; $('sWarn').value=settings.warn; $('sTheme').value=settings.theme; $('panelSettings').classList.add('open'); }
-}
-function closePanel(){ $('panelBg').classList.remove('open'); $('panelCases').classList.remove('open'); $('panelSettings').classList.remove('open'); }
-function saveSettings(){
-  settings={company:$('sCompany').value.trim(),area:$('sArea').value.trim(),expense:num($('sExpense').value,10),profit:num($('sProfit').value,25),tax:num($('sTax').value,10),welfare:num($('sWelfare').value,0),round:$('sRound').value,warn:num($('sWarn').value,20),theme:$('sTheme').value};
-  saveLS(LS_SETTINGS,settings); applyTheme(); calcTotals(); if(currentStep===3) generateOutput(); closePanel(); toast('設定を保存しました');
-}
-
-/* ---------- output ---------- */
-function generateOutput(){
-  const c=compute(); const s=getState();
-  const client=s.client||'（未記入）', address=s.address||'（未記入）', date=s.date||todayLocal();
-  const wt=s.workTypes.join('・')||'未選択';
-  const siteNote=s.siteNote||'（なし）', dimNote=s.dimNote||'（なし）', riskNote=s.riskNote.trim();
-  const duration=s.duration||'（未定）', validity=s.validity||'1ヶ月', payment=s.payment, excluded=s.excluded.trim();
-  const risks=s.risks, rList=risks.length?risks.join('、'):'なし';
-  const company=settings.company||'当社', area=settings.area||(s.address?s.address:'地域未設定（⚙設定で営業地域を登録）');
-  const erP=(c.er*100).toFixed(1).replace(/\.0$/,''), prP=(c.pr*100).toFixed(1).replace(/\.0$/,'');
-  const year=new Date().getFullYear();
-  const pm=i=>i.priceMissing?'（単価要確認）':'';
-  const line=i=>`・${i.name}：${i.qty}${i.unit} × ${yen(i.unit_price)} = ${yen(i.amount)}${pm(i)}`;
-  const mList=c.mat.items.map(line).join('\n')||'（未入力）';
-  const lList=c.lab.items.map(line).join('\n')||'（未入力）';
-  const sList=c.sub.items.length?c.sub.items.map(line).join('\n'):'（なし）';
-  const riskBlock=(risks.length?risks.map(r=>'・'+r).join('\n'):'・特になし')+(riskNote?'\n・'+riskNote.replace(/\n/g,'\n・'):'');
-  const welfareLine=c.wr>0?`■法定福利費（労務費×${settings.welfare}%）：${yen(c.welfare)}\n`:'';
-  const warnings=buildWarnings(c);
-  renderChecks(c,'outCheck');
-
-  const costBlock=
-`■材料費
-${mList}
-小計：${yen(c.mat.total)}
-
-■労務費（自社手間）
-${lList}
-小計：${yen(c.lab.total)}
-
-■外注費
-${sList}
-小計：${yen(c.sub.total)}
-
-${welfareLine}■現場経費（${erP}%）：${yen(c.exp)}
-■原価合計：${yen(c.cost)}
-■見積金額（税抜）：${yen(c.quote)}
-■消費税（${settings.tax}%）：${yen(c.tax)}
-■税込合計：${yen(c.gross)}
-■粗利：${yen(c.profit)}（実効粗利率 ${c.pct.toFixed(1)}%／目標 ${prP}%）`;
-
-  $('claudePrompt').textContent=
-`あなたは地域密着の小規模工務店（${company}）の見積作成を支援するアシスタントです。以下の現場調査データをもとに、施主に提出できる見積書の「たたき台」を作成してください。
-
-【施主情報】
-施主名：${client}　現場住所：${address}　調査日：${date}${s.caseNo?'　案件番号：'+s.caseNo:''}
-
-【工事概要】
-工事種別：${wt}
-工期目安：${duration}
-現場状況・施主要望：
-${siteNote}
-寸法メモ：${dimNote}
-
-【原価明細（概算・社内用）】
-${costBlock}
-
-【リスク・注意事項】
-${riskBlock}
-
-【見積条件】
-有効期限：${validity}　支払条件：${payment}
-別途工事・除外事項：${excluded||'（未記入）'}
-${warnings.length?'\n【アプリの整合チェックで出た指摘】\n'+warnings.map(w=>'・'+w).join('\n')+'\n':''}
-【出力してほしいもの】
-1. 施主向け見積書の文面（工事項目ごとに「項目名／数量・単位／金額／備考」。原価・粗利は施主向け文面に載せない。項目の粒度は施主が理解できる工種単位にまとめる）
-2. 見積書に添える「工事範囲と別途事項」の一覧（施主支給・除外事項・追加工事が発生し得る条件を明記）
-3. この見積で特に注意すべきリスク3点と、契約前に施主へ確認しておくべき質問
-4. 施主への説明で強調すべきポイント（値引きに頼らず価値を伝える表現で）
-
-前提：単価の妥当性は別途確認するので、金額は上記をそのまま使ってください。不明点は推測で埋めず「要確認」と記載してください。`;
-
-  $('perplexityPrompt').textContent=
-`以下の工事について、${area}周辺の現在（${year}年）の相場単価と関連法規を、出典URL付きで教えてください。
-
-【地域】${area}
-【工事種別】${wt}
-【現場概要】${siteNote}
-【寸法メモ】${dimNote}
-
-【確認したい内容】
-1. 次の各項目の${year}年時点の標準的な単価レンジ（材工別・材工込みの別を明記）
-${[...c.mat.items,...c.lab.items,...c.sub.items].filter(i=>i.name!=='（未記入）').map(i=>`   - ${i.name}（${i.unit}あたり、入力値 ${yen(i.unit_price)}${pm(i)}）`).join('\n')||'   - （項目未入力）'}
-2. この工事に関係する建設業法・建築基準法・その他法令上の注意点（確認申請の要否、アスベスト事前調査、資格要件など）
-3. 国・秋田県・市町村レベルで該当し得る補助金・助成金（省エネ改修、耐震、子育て、移住など）と申請時期
-4. リスク項目への対処と概算コスト：${rList}
-
-情報は一次情報（官公庁・業界団体・メーカー）を優先し、単価は「出典・年・地域」を明示してください。不確かな場合はその旨を書いてください。`;
-
-  $('chatgptPrompt').textContent=
-`あなたは木造住宅リフォーム・修繕の積算の専門家です。以下の現場情報と原価概算を確認し、①見落としている可能性のある工事項目（仮設・養生・撤去・処分・諸経費・設備の付帯工事など）、②各単価の妥当性、③数量と単位の整合性、④合計金額の整合性について指摘してください。
-
-【工事概要】
-施主：${client}　現場：${address}（${area}）
-工事種別：${wt}
-現場状況：${siteNote}
-寸法メモ：${dimNote}
-
-【原価概算】
-${costBlock}
-
-【リスク要因】${rList}${riskNote?'／'+riskNote:''}
-${warnings.length?'\n【アプリの整合チェックで出た指摘】\n'+warnings.map(w=>'・'+w).join('\n')+'\n':''}
-追加すべき項目・単価の修正提案を、根拠とともに箇条書きで教えてください。断定できない点は「要確認」として理由を添えてください。`;
-
-  $('notionOutput').textContent=
-`# 案件メモ｜${client}${s.caseNo?'（#'+s.caseNo+'）':''}
-日付：${date}　現場：${address}
-工事種別：${wt}
-写真・図面：${s.photoNote||'（未記入）'}
-
-## 現場状況
-${siteNote}
-
-## 寸法メモ
-${dimNote}
-
-## 原価概算（社内用）
-| 項目 | 金額 |
-|------|------|
-| 材料費 | ${yen(c.mat.total)} |
-| 労務費 | ${yen(c.lab.total)} |
-| 外注費 | ${yen(c.sub.total)} |
-${c.wr>0?`| 法定福利費(${settings.welfare}%) | ${yen(c.welfare)} |\n`:''}| 現場経費(${erP}%) | ${yen(c.exp)} |
-| 原価合計 | ${yen(c.cost)} |
-| 見積金額(税抜) | ${yen(c.quote)} |
-| 消費税(${settings.tax}%) | ${yen(c.tax)} |
-| 税込合計 | ${yen(c.gross)} |
-| 粗利 | ${yen(c.profit)}（${c.pct.toFixed(1)}%） |
-
-## 明細
-${['材料費','労務費','外注費'].map((t,i)=>'### '+t+'\n'+([c.mat,c.lab,c.sub][i].items.map(line).join('\n')||'（なし）')).join('\n')}
-
-## リスク
-${risks.length?risks.map(r=>'- '+r).join('\n'):'- なし'}${riskNote?'\n- '+riskNote.replace(/\n/g,'\n- '):''}
-${warnings.length?'\n## 整合チェック\n'+warnings.map(w=>'- '+w).join('\n')+'\n':''}
-## 見積条件
-工期：${duration}　有効期限：${validity}　支払：${payment}
-別途・除外：${excluded||'（なし）'}
-
-## ステータス
-- [ ] 単価確認（Perplexity）
-- [ ] 積算チェック（AI）
-- [ ] 見積書作成
-- [ ] 施主提出
-- [ ] 受注確認`;
-
-  const tsvRows=[['区分','品名','数量','単位','単価','金額','備考']];
-  [['材料費',c.mat],['労務費',c.lab],['外注費',c.sub]].forEach(([t,d])=>d.items.forEach(i=>tsvRows.push([t,i.name,i.qty,i.unit,i.unit_price,Math.round(i.amount),i.priceMissing?'単価要確認':''])));
-  if(c.wr>0) tsvRows.push(['法定福利費','労務費×'+settings.welfare+'%',1,'式',Math.round(c.welfare),Math.round(c.welfare),'']);
-  tsvRows.push(['現場経費','現場経費 '+erP+'%',1,'式',Math.round(c.exp),Math.round(c.exp),'']);
-  tsvRows.push(['','原価合計','','','',Math.round(c.cost),'']);
-  tsvRows.push(['','見積金額（税抜）','','','',c.quote,'粗利率 '+c.pct.toFixed(1)+'%']);
-  tsvRows.push(['','消費税','','','',c.tax,settings.tax+'%']);
-  tsvRows.push(['','税込合計','','','',c.gross,'']);
-  $('tsvOutput').textContent=tsvRows.map(r=>r.map(v=>String(v).replace(/\t/g,' ')).join('\t')).join('\n');
-}
-
-function copyText(id,btnId){
-  const text=$(id).textContent;
-  const done=()=>{ const btn=$(btnId); btn.textContent='COPIED ✓'; btn.classList.add('copied'); setTimeout(()=>{ btn.textContent='COPY'; btn.classList.remove('copied'); },2500); };
-  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done)); }
-  else fallbackCopy(text,done);
-}
-function fallbackCopy(text,done){
-  const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
-  try{ document.execCommand('copy'); done(); }catch(e){ alert('コピーできませんでした。長押しで選択してください。'); }
-  document.body.removeChild(ta);
-}
-function shareText(){
-  if(!navigator.share) return;
-  navigator.share({title:'案件メモ｜'+($('clientName').value||'未記入'),text:$('notionOutput').textContent}).catch(()=>{});
-}
-</script>
+<script src="app.js" defer></script>
 </body>
 </html>
