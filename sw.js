@@ -1,6 +1,6 @@
 /* オフライン対応（現場の電波が弱い場所でも起動できるように） */
-const CACHE = 'mitsumori-v3';
-const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const CACHE = 'mitsumori-v4';
+const ASSETS = ['./', './index.html', './app.js?v=4', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

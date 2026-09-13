@@ -78,11 +78,31 @@ window.addEventListener('DOMContentLoaded',()=>{
   else { blankCase(); }
   goStep(draft&&draft.step?draft.step:0,true);
   if(!navigator.share) $('shareBtn').style.display='none';
-  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+  setupServiceWorker();
 });
 
+/* ---------- service worker（オフライン起動）と更新 ---------- */
+function setupServiceWorker(){
+  if(!('serviceWorker' in navigator)) return;
+  const sw=navigator.serviceWorker;
+  const hadController=!!sw.controller;
+  sw.addEventListener('controllerchange',()=>{ if(hadController) $('updateBar').hidden=false; });
+  sw.register('sw.js').then(reg=>{
+    if(reg.waiting&&sw.controller) $('updateBar').hidden=false;
+    reg.addEventListener('updatefound',()=>{ const nw=reg.installing; if(!nw) return; nw.addEventListener('statechange',()=>{ if(nw.state==='installed'&&sw.controller) $('updateBar').hidden=false; }); });
+    reg.update().catch(()=>{});
+  }).catch(()=>{});
+}
+function applyUpdate(){ $('updateBar').hidden=true; location.reload(); }
+async function refreshApp(){
+  if(navigator.onLine===false){ alert('オフラインのため更新できません。電波のある場所で実行してください。'); return; }
+  if(!confirm('アプリ本体のキャッシュを消して最新版を読み直します。案件データ・設定はそのまま残ります。よろしいですか？')) return;
+  try{ if('serviceWorker' in navigator){ const regs=await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r=>r.unregister())); } }catch(e){}
+  try{ if(window.caches){ const keys=await caches.keys(); await Promise.all(keys.map(k=>caches.delete(k))); } }catch(e){}
+  location.reload();
+}
 function bindActions(){
-  const ACTS={saveCase:()=>saveCase(true),shareText,newCase,exportAll,saveSettings,closePanel,wipeAll};
+  const ACTS={saveCase:()=>saveCase(true),shareText,newCase,exportAll,saveSettings,closePanel,wipeAll,applyUpdate,refreshApp};
   document.addEventListener('click',e=>{
     const el=e.target.closest('[data-step],[data-panel],[data-addrow],[data-copy],[data-act],[data-case],[data-del]');
     if(!el) return;

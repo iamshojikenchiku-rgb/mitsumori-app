@@ -175,6 +175,8 @@
 
   .fmt-num { text-align:right; font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
   @media (min-width:640px) { .step-page, .header { max-width:640px; margin-left:auto; margin-right:auto; } .header { position:sticky; } .panel { max-width:640px; margin:0 auto; } }
+  .update-bar { position:fixed; left:12px; right:12px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:60; background:var(--surface); border:1px solid var(--accent); border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+  .update-bar .btn { flex:0 0 auto; padding:8px 14px; font-size:13px; }
 </style>
 </head>
 <body>
@@ -422,13 +424,17 @@
   <div class="divider"></div>
   <div class="hint">案件データ（施主名・住所など）はこの端末のブラウザ内にのみ保存されます。端末を手放す・共用する前に消去してください。</div>
   <div class="nav-row"><button class="btn btn-secondary small" data-act="wipeAll">この端末の全データを消去</button></div>
+  <div class="divider"></div>
+  <div class="hint">画面が古いまま・動かない場合は、アプリ本体のキャッシュを消して最新版を読み直します（案件データは消えません）。</div>
+  <div class="nav-row"><button class="btn btn-secondary small" data-act="refreshApp">アプリを最新版に更新</button></div>
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="update-bar" id="updateBar" hidden><span>新しいバージョンがあります</span><button class="btn btn-primary small" data-act="applyUpdate">更新する</button></div>
 <datalist id="dlMaterial"></datalist>
 <datalist id="dlLabor"></datalist>
 <datalist id="dlSub"></datalist>
 
-<script src="app.js" defer></script>
+<script src="app.js?v=4" defer></script>
 </body>
 </html>
